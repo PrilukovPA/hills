@@ -1,0 +1,172 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ru.evenx</groupId>
+  <artifactId>hills</artifactId>
+  <packaging>jar</packaging>
+
+  <name>hills</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>   
+    
+    <dependency> 
+	   <groupId>com.oracle</groupId>
+	   <artifactId>ojdbc6</artifactId>
+	   <version>11.2.0</version>
+     </dependency>
+     
+     <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+	 <dependency>
+	    <groupId>org.apache.httpcomponents</groupId>
+	    <artifactId>httpclient</artifactId>
+	    <version>4.5.7</version>
+	 </dependency>
+
+	 <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+	 <dependency>
+	    <groupId>com.google.code.gson</groupId>
+	    <artifactId>gson</artifactId>
+	    <version>2.8.5</version>
+	 </dependency>
+	
+	<!-- http://mvnrepository.com/artifact/org.apache.commons/commons-email --> 
+	<dependency>
+	  <groupId>org.apache.commons</groupId>
+	  <artifactId>commons-email</artifactId>
+	  <version>1.3.2</version>
+	</dependency>	
+	
+	<!-- https://mvnrepository.com/artifact/org.jasypt/jasypt -->
+	<dependency>
+	    <groupId>org.jasypt</groupId>
+	    <artifactId>jasypt</artifactId>
+	    <version>1.9.2</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/info.picocli/picocli -->
+	<dependency>
+	    <groupId>info.picocli</groupId>
+	    <artifactId>picocli</artifactId>
+	    <version>3.9.5</version>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+	<dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-core</artifactId>
+	    <version>1.2.3</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+	<dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.3</version>
+    </dependency>
+
+  </dependencies>
+  
+  <build>
+  	<plugins>
+  	
+  			<!--Настройка компиляции проекта-->
+  			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            
+            <!--Копирование зависимотей из репозитория в папку lib/-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <!--Все зависимости, которые нужны для работы приложения, будут лежать здесь-->
+                    <outputDirectory>${project.build.directory}/lib/</outputDirectory>
+                    <overWriteReleases>true</overWriteReleases>
+                    <overWriteSnapshots>true</overWriteSnapshots>
+                    <overWriteIfNewer>true</overWriteIfNewer>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+  	
+  		<!--Построение манифеста с прописыванием Classpath, чтобы jar-ник видел зависимости-->
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-jar-plugin</artifactId>
+  			<version>2.4</version>  			
+  			<configuration>
+		        <archive>
+		       		<!--Если надо конфигурировать манифест, то здесь-->
+		            <manifest>
+		                <addClasspath>true</addClasspath>
+		                <!--путь к зависимостям относительно запускаемого jar файла-->
+                        <!--ВСЕ ЗАВИСИМОСТИ ДОЛЖНЫ БУДУТ ПОСТАВЛЯТЬСЯ С jar-приложением. -->
+                         <classpathPrefix>lib/</classpathPrefix>
+                         <!-- <classpathLayoutType>simple</classpathLayoutType> -->		                
+		                <mainClass>ru.evenx.hills.Main</mainClass>
+		            </manifest>
+		            <!--Отдельная запись в classpath манифеста-->
+		            <!-- 
+		            <manifestEntries>
+                    	<Rsrc-Class-Path>lib/logging.properties</Rsrc-Class-Path>
+                    </manifestEntries>
+                     -->
+		        </archive>
+		    </configuration>
+  		</plugin>
+  		<plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.4</version>
+        </plugin>
+  	</plugins>
+  	<resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include> **/*.properties</include>
+                <include> **/*.xml</include>
+            </includes>
+        </resource>
+    </resources>
+  </build>
+  
+  <version>0.0.1-SNAPSHOT</version>
+ 
+  <dependencyManagement>
+  	<dependencies>
+  		<dependency>
+  			<groupId>junit</groupId>
+  			<artifactId>junit</artifactId>
+  			<version>3.8.1</version>
+  		</dependency>
+  	</dependencies>
+  </dependencyManagement>
+  
+</project>
